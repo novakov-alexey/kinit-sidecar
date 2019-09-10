@@ -17,7 +17,10 @@ function generate_config()
 
      mkdir -p ${KDC_DATABASE}
 
-     if [ -z ${KRB5_PASS} ]; then
+     # using mounted password
+     KRB5_PASS=$(cat /etc/krb5/secret/krb5_pass) 
+
+     if [[ -z "${KRB5_PASS// }" ]]; then
 
         KRB5_PASS=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32};echo;)
         echo "*** Your KDC password is ${KRB5_PASS}"
