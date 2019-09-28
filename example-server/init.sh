@@ -5,10 +5,9 @@ KDC_CONFIG_DIR=/var/kerberos/krb5kdc
 KDC_DATABASE=/dev/shm/kerberos/db
 
 [ -z ${KRB5_KDC} ] && echo "*** KRB5_KDC variable not set, KDC host missing, using 'localhost' as default." && KRB5_KDC=localhost
-
 [ -z ${RUN_MODE} ] && echo "*** RUN_MODE not specified, options are 'kdc', and 'kadmin'. Default is 'kdc'" && RUN_MODE=kdc
-
 [ -z ${KRB5_REALM} ] && echo "*** Default realm not set (KRB5_REALM), using EXAMPLE.COM as default" && KRB5_REALM="EXAMPLE.COM"
+[ -z ${RANDOM_KDC_PASS} ] && echo " RANDOM_KDC_PASS is not set, using false as default " && RANDOM_KDC_PASS=false
 
 function generate_config()
 {
@@ -20,12 +19,16 @@ function generate_config()
      # using mounted password
      KRB5_PASS=$(cat /etc/krb5/secret/krb5_pass) 
 
-     if [[ -z "${KRB5_PASS// }" ]]; then
+    if [ -z "${KRB5_PASS// }" ]; then
+      if [ "${RANDOM_KDC_PASS}" = "true" ]; then
 
-        KRB5_PASS=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32};echo;)
-        echo "*** Your KDC password is ${KRB5_PASS}"
-
-     fi
+          KRB5_PASS=$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c${1:-32};echo;)
+          echo "*** Your KDC password is ${KRB5_PASS}"   
+      else 
+          echo "KRB5_PASS variable is not set and RANDOM_KDC_PASS is set to false. Please set one of the them, so that password will be defined"
+          exit 1
+      fi
+    fi
 
 ACL_FILE="${KDC_CONFIG_DIR}.d/kadm5-${KRB5_REALM}.acl"
 
