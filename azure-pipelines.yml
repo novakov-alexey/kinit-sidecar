@@ -16,6 +16,6 @@ steps:
     command: buildAndPush
     repository: $(imageRepository)
     dockerfile: $(dockerfilePath)
-    containerRegistry: $(dockerRegistryServiceConnection)
+    containerRegistry: $(cr-connection)
     tags: |
       $(tag)    
