@@ -11,7 +11,7 @@ pool:
 
 steps:
 - script: |
-    docker build .    
+    docker build . -t ypkss.azurecr.io/kinit-sidecar    
   displayName: 'Build Image'
 
 - script: docker push ypkss.azurecr.io/kinit-sidecar
