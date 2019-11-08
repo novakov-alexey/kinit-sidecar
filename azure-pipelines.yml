@@ -10,9 +10,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: |
-    docker build . -t ypkss.azurecr.io/kinit-sidecar    
-  displayName: 'Build Image'
-
-- script: docker push ypkss.azurecr.io/kinit-sidecar
-  displayName: 'Push Image'
+- task: Docker@2
+  displayName: Build and push an image to container registry
+  inputs:
+    command: buildAndPush
+    repository: $(imageRepository)
+    dockerfile: $(dockerfilePath)
+    containerRegistry: $(dockerRegistryServiceConnection)
+    tags: |
+      $(tag)    
