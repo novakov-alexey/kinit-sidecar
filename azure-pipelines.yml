@@ -21,4 +21,5 @@ steps:
     dockerfile: ./Dockerfile
     containerRegistry: 'cr-connection'
     tags: |
-      $(Build.BuildId)   
+      $(Build.BuildId)
+      latest   
