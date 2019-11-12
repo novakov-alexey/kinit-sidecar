@@ -17,7 +17,7 @@ steps:
   displayName: Build and push an image to container registry
   inputs:
     command: buildAndPush
-    repository: kinint-sidecar
+    repository: kinit-sidecar
     dockerfile: ./Dockerfile
     containerRegistry: 'cr-connection'
     tags: |
