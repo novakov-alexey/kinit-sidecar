@@ -9,8 +9,7 @@ KDC_DATABASE=/dev/shm/kerberos/db
 [ -z ${KRB5_REALM} ] && echo "*** Default realm not set (KRB5_REALM), using EXAMPLE.COM as default" && KRB5_REALM="EXAMPLE.COM"
 [ -z ${RANDOM_KDC_PASS} ] && echo " RANDOM_KDC_PASS is not set, using false as default " && RANDOM_KDC_PASS=false
 
-function generate_config()
-{
+function generate_config() {
    # create a kdc principal if one doesn't exist
    if [ ! -f "${KDC_DATABASE}/principal" ]; then
 
@@ -28,6 +27,8 @@ function generate_config()
           echo "KRB5_PASS variable is not set and RANDOM_KDC_PASS is set to false. Please set one of the them, so that password will be defined"
           exit 1
       fi
+    else
+      echo "KDC database ${KDC_DATABASE} already exists"
     fi
 
 ACL_FILE="${KDC_CONFIG_DIR}.d/kadm5-${KRB5_REALM}.acl"
@@ -80,17 +81,14 @@ EOF
    fi
 }
 
-function share_config()
-{
+function share_config() {
    mkdir -p /dev/shm/krb5/etc
    cp -rp /var/kerberos/* /dev/shm/krb5/
    cp /etc/krb5.conf /dev/shm/krb5/etc/
    cp -rp /etc/krb5.conf.d /dev/shm/krb5/etc/
-
 }
 
-function copy_shared_config()
-{
+function copy_shared_config() {
   counter=0
   while [[ ! -d /dev/shm/krb5/etc ]]
   do
@@ -105,27 +103,25 @@ function copy_shared_config()
   cp -r /dev/shm/krb5/krb5* /var/kerberos/
   cp /dev/shm/krb5/etc/krb5.conf /etc/
   cp -r /dev/shm/krb5/etc/krb5.conf.d/* /etc/krb5.conf.d/
-
 }
 
 
-function run_kdc()
-{
-
+function run_kdc() {
+  echo "KDC mode: Generating config"
   generate_config
-
+  echo "KDC mode: Sharing config"
   share_config
-
+   
+  echo "KDC mode: starting krb5kdc" 
   /usr/sbin/krb5kdc -n -r ${KRB5_REALM}
-
 }
 
-function run_kadmin()
-{
+function run_kadmin() {
+  echo "Kadmin mode: copying shared config"
   copy_shared_config
-
+  
+  echo "Kadmin mode: starting kadmind"
   /usr/sbin/kadmind -nofork -r ${KRB5_REALM} 
-
 }
 
 case $RUN_MODE in
