@@ -14,7 +14,7 @@ pool:
 
 steps:
 - task: Docker@2
-  displayName: Build and push an image to container registry
+  displayName: Build and push kinit-sidecar image to container registry
   inputs:
     command: buildAndPush
     repository: kinit-sidecar
@@ -23,3 +23,13 @@ steps:
     tags: |
       $(Build.BuildId)
       latest   
+- task: Docker@2
+  displayName: Build and push krb5 image to container registry
+  inputs:
+    command: buildAndPush
+    repository: krb5
+    dockerfile: ./example-server/Dockerfile
+    containerRegistry: 'cr-connection'
+    tags: |
+      $(Build.BuildId)
+      latest         
